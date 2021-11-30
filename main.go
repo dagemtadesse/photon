@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	// sample comment
 	App := fiber.New()
 
 	App.Use(logger.New())
