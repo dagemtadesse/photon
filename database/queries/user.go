@@ -3,24 +3,18 @@ package queries
 import (
 	"photon/database"
 	"photon/model"
-
-	"github.com/google/uuid"
 )
 
-func CreateUserCreds(user model.Credential) (uuid.UUID, error) {
-	var userId uuid.UUID
+func CreateUserCreds(user *model.Credential) error {
 
 	conn := database.GetInstance()
 	query := `
 		INSERT INTO user_credentials(email, password) 
-		VALUES ($1, $2) 
-		RETURNING id
+		VALUES ($1, $2)
 	`
-	err := conn.
-		QueryRow(query, user.Email, user.Password).
-		Scan(&userId)
+	_, err := conn.Exec(query, user.Email, user.Password)
 
-	return userId, err
+	return err
 }
 
 func GetUserCreds(email string) (model.Credential, error) {

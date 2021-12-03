@@ -9,11 +9,14 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func Signup(ctx *fiber.Ctx) error {
 	// get user credentials from request object
-	var newUser model.Credential
+	var newUser = model.Credential{
+		Id: uuid.New(),
+	}
 
 	if err := ctx.BodyParser(&newUser); err != nil {
 		log.Println(err)
@@ -46,9 +49,6 @@ func Signup(ctx *fiber.Ctx) error {
 		log.Println(err)
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
-
-	// set the user id the uuid generated from the database
-	newUser.Id = userId
 
 	// return the id and email
 	return ctx.JSON(fiber.Map{
