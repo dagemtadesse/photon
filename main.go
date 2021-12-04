@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"photon/controller/auth"
+	"photon/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -13,7 +15,21 @@ import (
 
 func main() {
 	// sample comment
-	App := fiber.New()
+	App := fiber.New(fiber.Config{
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			code := fiber.StatusInternalServerError
+
+			if e, ok := err.(*fiber.Error); ok {
+				code = e.Code
+			}
+
+			if strings.HasPrefix(ctx.BaseURL(), "/api") {
+				return ctx.Status(code).JSON(utils.ErrInternalServerError)
+			}
+
+			return ctx.SendStatus(code)
+		},
+	})
 
 	App.Use(logger.New())
 
