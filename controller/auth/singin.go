@@ -29,32 +29,40 @@ func Signin(ctx *fiber.Ctx) error {
 	existingCred, err := queries.GetUserCreds(reqCred.Email)
 
 	if err != nil {
+		log.Println(err)
 
 		if err == sql.ErrNoRows {
 			return ctx.SendStatus(fiber.StatusUnauthorized)
 		}
-
-		log.Println(err)
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
-	//hashed password and plain passwords
-	hash := []byte(existingCred.Password)
-	plainPassword := []byte(reqCred.Password)
 
-	// compare the hash and the plain passwords
-	err = bcrypt.CompareHashAndPassword(hash, plainPassword)
+	err = reqCred.CompareHashAndPassword(&existingCred)
 
 	if err != nil {
+		log.Println(err)
+		// the two passwords do not match
 		if err == bcrypt.ErrMismatchedHashAndPassword {
 			return ctx.SendStatus(fiber.StatusUnauthorized)
 		}
-
-		log.Println(err)
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 
 	//create sesssion id
-	//create cookie
+	sessionId := existingCred.CreateSessionId()
+	err = queries.StoreSessionId(&existingCred, sessionId)
 
-	return nil
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	//create cookie
+	ctx.Cookie(&fiber.Cookie{
+		Name:     existingCred.Id.String(),
+		Value:    sessionId,
+		Secure:   true,
+		HTTPOnly: true,
+	})
+
+	return ctx.SendStatus(fiber.StatusOK)
 }

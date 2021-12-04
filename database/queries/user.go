@@ -7,7 +7,7 @@ import (
 
 func CreateUserCreds(user *model.Credential) error {
 
-	conn := database.GetInstance()
+	conn := database.GetDBInstance()
 	query := `
 		INSERT INTO user_credentials(email, password) 
 		VALUES ($1, $2)
@@ -20,7 +20,7 @@ func CreateUserCreds(user *model.Credential) error {
 func GetUserCreds(email string) (model.Credential, error) {
 	var user model.Credential
 
-	conn := database.GetInstance()
+	conn := database.GetDBInstance()
 	query := `
 		SELECT * FROM user_credentials
 		wHERE email = $1

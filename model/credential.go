@@ -28,3 +28,17 @@ func (user *Credential) HashPassword() error {
 
 	return nil
 }
+
+func (user *Credential) CompareHashAndPassword(other *Credential) error {
+	//hashed password and plain passwords
+	hash := []byte(other.Password)
+	plainPassword := []byte(user.Password)
+
+	// compare the hash and the plain passwords
+	return bcrypt.CompareHashAndPassword(hash, plainPassword)
+}
+
+func (user *Credential) CreateSessionId() string {
+	// todo create session id
+	return user.Id.String()
+}
