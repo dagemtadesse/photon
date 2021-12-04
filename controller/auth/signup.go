@@ -1,13 +1,10 @@
 package auth
 
 import (
-	"log"
 	"net/http"
 	"photon/database/queries"
 	"photon/model"
 	"photon/utils"
-
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -22,7 +19,6 @@ func Signup(ctx *fiber.Ctx) error {
 	var newUser = model.Credential{
 		Id: uuid.New(),
 	}
-
 	// parse user cred data into newuser
 	// support xml, json and urlencoded
 	if err := ctx.BodyParser(&newUser); err != nil {
@@ -35,23 +31,15 @@ func Signup(ctx *fiber.Ctx) error {
 	err := Validate.Struct(newUser)
 
 	if err != nil {
-		log.Println(err)
-
 		return ctx.
 			Status(http.StatusBadRequest).
 			JSON(&utils.ErrInvalidData)
 	}
 
-	// hash user password
-	passwordSlice := []byte(newUser.Password)
-	hash, err := bcrypt.GenerateFromPassword(passwordSlice, bcrypt.DefaultCost)
-
+	err = newUser.HashPassword()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-	// change the plain password  on the user struct to
-	// the hashed password
-	newUser.Password = string(hash)
 
 	// insert user to the database
 	err = queries.CreateUserCreds(&newUser)

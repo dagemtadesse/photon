@@ -1,13 +1,24 @@
 package utils
 
 import (
-	"errors"
 	"net/http"
 )
 
+type GenericErr struct {
+	Type    string `json:"type"`
+	Message string `json:"message"`
+}
+
+func new(err, msg string) *GenericErr {
+	return &GenericErr{
+		Type:    err,
+		Message: msg,
+	}
+}
+
 var (
-	ErrInvalidData            = errors.New("invalid Data provided")
-	ErrInvalidDataFormat      = errors.New("unsuported data format")
-	ErrEmailAlreadyRegistered = errors.New("email already taken")
-	ErrInternalServerError    = errors.New(http.StatusText(http.StatusInternalServerError))
+	ErrInvalidData            = new("invalida data", "some fields does not confirm with thier type")
+	ErrInvalidDataFormat      = new("unsuported data format", "unable to parse equest body")
+	ErrEmailAlreadyRegistered = new("database operation error", "provided email already exists")
+	ErrInternalServerError    = new(http.StatusText(http.StatusInternalServerError), "")
 )
