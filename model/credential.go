@@ -1,9 +1,12 @@
 package model
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var Validate = validator.New()
 
 type Credential struct {
 	Id       uuid.UUID `json:"id" `
@@ -36,9 +39,4 @@ func (user *Credential) CompareHashAndPassword(other *Credential) error {
 
 	// compare the hash and the plain passwords
 	return bcrypt.CompareHashAndPassword(hash, plainPassword)
-}
-
-func (user *Credential) CreateSessionId() string {
-	// todo create session id
-	return user.Id.String()
 }

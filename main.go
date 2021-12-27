@@ -2,45 +2,23 @@ package main
 
 import (
 	"log"
-	"strings"
+	"os"
 
-	"photon/controller/auth"
-	"photon/utils"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-
+	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 )
 
+var Router *gin.Engine
+
 func main() {
-	// sample comment
-	App := fiber.New(fiber.Config{
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			code := fiber.StatusInternalServerError
 
-			if e, ok := err.(*fiber.Error); ok {
-				code = e.Code
-			}
+	Router = gin.New()
 
-			if strings.HasPrefix(ctx.BaseURL(), "/api") {
-				return ctx.Status(code).JSON(utils.ErrInternalServerError)
-			}
-
-			return ctx.SendStatus(code)
-		},
+	Router.GET("/login", func(ctx *gin.Context) {
+		ctx.String(200, "login")
 	})
 
-	App.Use(logger.New())
-
-	authRouter := App.Group("/api")
-
-	{
-		authRouter.Post("/signin", auth.Signin)
-		authRouter.Post("/signup", auth.Signup)
-	}
-
-	if err := App.Listen(":8080"); err != nil {
-		log.Println(err.Error())
+	if Router.Run(os.Getenv("PORT")) != nil {
+		log.Fatalln("unable to start the server ", os.Getenv("PORT"))
 	}
 }
