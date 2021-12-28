@@ -4,6 +4,9 @@ import (
 	"log"
 	"os"
 
+	"photon/controller"
+	"photon/controller/auth"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -14,9 +17,13 @@ func main() {
 
 	Router = gin.New()
 
-	Router.GET("/login", func(ctx *gin.Context) {
-		ctx.String(200, "login")
-	})
+	Router.GET("/test", controller.Test)
+
+	{
+		Router.POST("/login", auth.LoginHandler)
+		Router.POST("/register", auth.RegisterHandler)
+		Router.POST("/logout", auth.LogoutHandler)
+	}
 
 	if Router.Run(os.Getenv("PORT")) != nil {
 		log.Fatalln("unable to start the server ", os.Getenv("PORT"))

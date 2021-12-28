@@ -5,7 +5,7 @@ import (
 	"photon/model"
 )
 
-func CreateUserCreds(user *model.Credential) error {
+func CreateUserCreds(user *model.User) error {
 
 	conn := database.GetDBInstance()
 	query := `
@@ -17,8 +17,8 @@ func CreateUserCreds(user *model.Credential) error {
 	return err
 }
 
-func GetUserCreds(email string) (model.Credential, error) {
-	var user model.Credential
+func GetUserCreds(email string) (model.User, error) {
+	var user model.User
 
 	conn := database.GetDBInstance()
 	query := `
