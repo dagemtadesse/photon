@@ -5,16 +5,14 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"strconv"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/gin-contrib/sessions/redis"
 	_ "github.com/lib/pq"
 )
 
 var (
-	dbInstance    *sql.DB
-	cacheInstance *redis.Client
-	err           error
+	dbInstance *sql.DB
+	err        error
 
 	Ctx = context.Background()
 )
@@ -34,16 +32,18 @@ func GetDBInstance() *sql.DB {
 	return dbInstance
 }
 
-func GetCacheInstance() *redis.Client {
-	if cacheInstance == nil {
-		redis_db, _ := strconv.Atoi(os.Getenv("REDIS_DB"))
+func RedisStore() redis.Store {
+	store, err := redis.NewStore(
+		10,
+		os.Getenv("REDIS_NETWORK"),
+		os.Getenv("REDIS_URL"),
+		os.Getenv("REDIS_PASSWORD"),
+		[]byte(os.Getenv("HASHING_KEY")),
+	)
 
-		cacheInstance = redis.NewClient(&redis.Options{
-			Addr:     os.Getenv("REDIS_ADDR"),
-			DB:       redis_db,
-			Password: os.Getenv("REDIS_PASSWORD"),
-		})
+	if err != nil {
+		log.Fatalf("Unable to connect to redis: %v", err.Error())
 	}
 
-	return cacheInstance
+	return store
 }

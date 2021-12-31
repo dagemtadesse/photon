@@ -4,13 +4,14 @@ import (
 	"photon/database/queries"
 	"photon/model"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 var validate = validator.New()
 
-func authenticateUser(user *model.User) (err error) {
+func authenticateUser(user *model.User, ctx *gin.Context) (err error) {
 	if err = validate.Struct(user); err != nil {
 		return err
 	}
@@ -25,7 +26,11 @@ func authenticateUser(user *model.User) (err error) {
 		return nil
 	}
 
-	return nil
+	sesssion := sessions.Default(ctx)
+	sesssion.Set("id", existingUser.Id.String())
+
+	return sesssion.Save()
+
 }
 
 func createUser(user *model.User) (err error) {

@@ -33,3 +33,13 @@ func ErrInvalidDataForFields(err validator.ValidationErrors) *GenericErrorMsg {
 		Message: fmt.Sprintf("Invalid data for fields [%v]", strings.Join(fields, ",")),
 	}
 }
+
+var ErrUserDoesNotExists = &GenericErrorMsg{
+	Error:   "Database Error",
+	Message: "Provided Email Does not exist",
+}
+
+var ErrMismatchedEmailAndPassword = &GenericErrorMsg{
+	Error:   "Password Comparsing Error",
+	Message: "Email and Password doesn't match.",
+}
