@@ -7,6 +7,8 @@ import (
 	"photon/controller"
 	"photon/controller/auth"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -16,6 +18,10 @@ var Router *gin.Engine
 func main() {
 
 	Router = gin.New()
+
+	authCookie := cookie.NewStore([]byte("supersecret"))
+
+	Router.Use(sessions.Sessions("_session", authCookie))
 
 	Router.GET("/test", controller.Test)
 

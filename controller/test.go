@@ -14,6 +14,7 @@ func Test(ctx *gin.Context) {
 		ctx.String(400, err.Error())
 	}
 
+	// sessions.
 	sesssion := sessions.Default(ctx)
 	sesssion.Set("email", requestUser.Email)
 	sesssion.Set("Password", requestUser.Password)

@@ -14,7 +14,7 @@ func LoginHandler(ctx *gin.Context) {
 		ctx.String(400, err.Error())
 	}
 
-	authErr := requestUser.Authenticate()
+	authErr := authenticateUser(&requestUser)
 
 	if authErr != nil {
 		//error handling

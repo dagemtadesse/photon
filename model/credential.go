@@ -40,7 +40,3 @@ func (user *User) CompareHashAndPassword(other *User) error {
 	// compare the hash and the plain passwords
 	return bcrypt.CompareHashAndPassword(hash, plainPassword)
 }
-
-func (user *User) Authenticate() error {
-	return nil
-}
